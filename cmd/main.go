@@ -78,8 +78,9 @@ func main() {
 				fmt.Println("Create file", filename, "successfully.")
 			}
 		case "list-folders":
+			note := "Usage: list-folders [username] [--sort-name|--sort-created] [asc|desc]?"
 			if len(args) < 2 {
-				fmt.Println("Usage: list-folders [username] [--sort-name|--sort-created] [asc|desc]?")
+				fmt.Println(note)
 				continue
 			}
 			username := args[1]
@@ -87,8 +88,14 @@ func main() {
 			order := "asc"
 			if len(args) > 2 {
 				sortBy = strings.TrimPrefix(args[2], "--sort-")
-				if len(args) > 3 {
-					order = args[3]
+				if len(args) < 4 {
+					fmt.Println(note)
+					continue
+				}
+				order = args[3]
+				if order != "asc" && order != "desc" {
+					fmt.Println(note)
+					continue
 				}
 			}
 			folders, err := internal.ListFolders(username, sortBy, order)
@@ -104,8 +111,9 @@ func main() {
 				}
 			}
 		case "list-files":
+			note := "Usage: list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]?"
 			if len(args) < 3 {
-				fmt.Println("Usage: list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]?")
+				fmt.Println(note)
 				continue
 			}
 			username := args[1]
@@ -114,8 +122,14 @@ func main() {
 			order := "asc"
 			if len(args) > 3 {
 				sortBy = strings.TrimPrefix(args[3], "--sort-")
-				if len(args) > 4 {
-					order = args[4]
+				if len(args) < 5 {
+					fmt.Println(note)
+					continue
+				}
+				order = args[4]
+				if order != "asc" && order != "desc" {
+					fmt.Println(note)
+					continue
 				}
 			}
 			files, err := internal.ListFiles(username, foldername, sortBy, order)

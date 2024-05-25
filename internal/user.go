@@ -4,13 +4,11 @@ package internal
 import (
 	"fmt"
 	"sort"
-	"strings"
 	"time"
 )
 
 // RegisterUser registers a new user with a unique username
 func RegisterUser(username string) error {
-	username = strings.ToLower(username)
 	if _, exists := users[username]; exists {
 		return fmt.Errorf("The %s has already existed.", username)
 	}
@@ -31,7 +29,6 @@ func CreateFolder(username, foldername string, description ...string) error {
 		return fmt.Errorf("The %s doesn't exist.", username)
 	}
 
-	foldername = strings.ToLower(foldername)
 	if _, exists := user.Folders[foldername]; exists {
 		return fmt.Errorf("The %s has already existed.", foldername)
 	}
@@ -62,7 +59,6 @@ func CreateFile(username, foldername, filename string, description ...string) er
 		return fmt.Errorf("The %s doesn't exist.", foldername)
 	}
 
-	filename = strings.ToLower(filename)
 	if !isValidFilename(filename) {
 		return fmt.Errorf("The %s contains invalid chars.", filename)
 	}
@@ -183,7 +179,6 @@ func DeleteFolder(username, foldername string) error {
 		return fmt.Errorf("The %s doesn't exist.", username)
 	}
 
-	foldername = strings.ToLower(foldername)
 	if _, exists := user.Folders[foldername]; !exists {
 		return fmt.Errorf("The %s doesn't exist.", foldername)
 	}
@@ -204,7 +199,6 @@ func DeleteFile(username, foldername, filename string) error {
 		return fmt.Errorf("The %s doesn't exist.", foldername)
 	}
 
-	filename = strings.ToLower(filename)
 	if _, exists := folder.Files[filename]; !exists {
 		return fmt.Errorf("The %s doesn't exist.", filename)
 	}
@@ -220,8 +214,6 @@ func RenameFolder(username, foldername, newFolderName string) error {
 		return fmt.Errorf("The %s doesn't exist.", username)
 	}
 
-	foldername = strings.ToLower(foldername)
-	newFolderName = strings.ToLower(newFolderName)
 	if _, exists := user.Folders[foldername]; !exists {
 		return fmt.Errorf("The %s doesn't exist.", foldername)
 	}

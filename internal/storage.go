@@ -9,9 +9,19 @@ import (
 
 var dataFile = "data.json"
 var users = make(map[string]*User)
+var useMockData = false
+
+// UseMockData sets the mock data for testing
+func UseMockData(mockUsers map[string]*User) {
+	users = mockUsers
+	useMockData = true
+}
 
 // SaveData saves the current state of users to a JSON file
 func SaveData() error {
+	if useMockData {
+		return nil
+	}
 	data, err := json.Marshal(users)
 	if err != nil {
 		return err

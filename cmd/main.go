@@ -226,7 +226,7 @@ func handleCommand(command string, args []string) {
 
 func main() {
 	if err := internal.LoadData(); err != nil {
-		fmt.Println("Error loading data:", err)
+		fmt.Fprintln(os.Stderr, "Error: loading data:", err)
 		return
 	}
 
@@ -235,7 +235,7 @@ func main() {
 	fmt.Println("Type `help` to show the commands.")
 	fmt.Println("------------------------")
 	for {
-		fmt.Print("> ")
+		fmt.Print("# ")
 		input, _ := reader.ReadString('\n')
 		input = strings.TrimSpace(input)
 		args := parseArgs(input)

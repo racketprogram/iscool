@@ -85,7 +85,7 @@ func handleCommand(command string, args []string) {
 		if err != nil {
 			fmt.Println("Error:", err)
 		} else {
-			fmt.Println("Create", quoteIfNeeded(filename), "successfully.")
+			fmt.Printf("Create %s in %s/%s successfully.\n",quoteIfNeeded(filename), quoteIfNeeded(username), quoteIfNeeded(foldername))
 		}
 	case "list-folders":
 		if len(args) != 1 && len(args) != 3 {

@@ -5,8 +5,17 @@ import (
 	"fmt"
 	"regexp"
 	"sort"
+	"strings"
 	"time"
 )
+
+// QuoteIfNeeded adds double quotes around a string if it contains spaces
+func QuoteIfNeeded(s string) string {
+	if strings.Contains(s, " ") {
+		return fmt.Sprintf("\"%s\"", s)
+	}
+	return s
+}
 
 // isValidName validates the name, allowing letters, numbers, spaces, underscores, and hyphens, with a length of 1-50 characters.
 func isValidName(name string) bool {
@@ -15,13 +24,25 @@ func isValidName(name string) bool {
 	return validNameRegex.MatchString(name)
 }
 
+func errorAlreayExisted(name string) error {
+	return fmt.Errorf("The %s has already existed.", QuoteIfNeeded(name))
+}
+
+func errorDoesntExisted(name string) error {
+	return fmt.Errorf("The %s doesn't exist.", QuoteIfNeeded(name))
+}
+
+func errorInvalidChars(name string) error {
+	return fmt.Errorf("The %s contains invalid chars.", QuoteIfNeeded(name))
+}
+
 // RegisterUser registers a new user with a unique username
 func RegisterUser(username string) error {
 	if _, exists := users[username]; exists {
-		return fmt.Errorf("The %s has already existed.", username)
+		return errorAlreayExisted(username)
 	}
 	if !isValidName(username) {
-		return fmt.Errorf("The %s contains invalid chars.", username)
+		return errorInvalidChars(username)
 	}
 	users[username] = &User{
 		Username: username,
@@ -34,15 +55,15 @@ func RegisterUser(username string) error {
 func CreateFolder(username, foldername string, description ...string) error {
 	user, exists := users[username]
 	if !exists {
-		return fmt.Errorf("The %s doesn't exist.", username)
+		return errorDoesntExisted(username)
 	}
 
 	if _, exists := user.Folders[foldername]; exists {
-		return fmt.Errorf("The %s has already existed.", foldername)
+		return errorAlreayExisted(foldername)
 	}
 
 	if !isValidName(foldername) {
-		return fmt.Errorf("The %s contains invalid chars.", foldername)
+		return errorInvalidChars(foldername)
 	}
 
 	desc := ""
@@ -63,20 +84,20 @@ func CreateFolder(username, foldername string, description ...string) error {
 func CreateFile(username, foldername, filename string, description ...string) error {
 	user, exists := users[username]
 	if !exists {
-		return fmt.Errorf("The %s doesn't exist.", username)
+		return errorDoesntExisted(username)
 	}
 
 	folder, exists := user.Folders[foldername]
 	if !exists {
-		return fmt.Errorf("The %s doesn't exist.", foldername)
+		return errorDoesntExisted(foldername)
 	}
 
 	if !isValidName(filename) {
-		return fmt.Errorf("The %s contains invalid chars.", filename)
+		return errorInvalidChars(filename)
 	}
 
 	if _, exists := folder.Files[filename]; exists {
-		return fmt.Errorf("The %s has already existed.", filename)
+		return errorAlreayExisted(filename)
 	}
 
 	desc := ""
@@ -96,7 +117,7 @@ func CreateFile(username, foldername, filename string, description ...string) er
 func ListFolders(username, sortBy, order string) ([]*Folder, error) {
 	user, exists := users[username]
 	if !exists {
-		return nil, fmt.Errorf("The %s doesn't exist.", username)
+		return nil, errorDoesntExisted(username)
 	}
 
 	folders := make([]*Folder, 0, len(user.Folders))
@@ -140,12 +161,12 @@ func ListFolders(username, sortBy, order string) ([]*Folder, error) {
 func ListFiles(username, foldername, sortBy, order string) ([]*File, error) {
 	user, exists := users[username]
 	if !exists {
-		return nil, fmt.Errorf("The %s doesn't exist.", username)
+		return nil, errorDoesntExisted(username)
 	}
 
 	folder, exists := user.Folders[foldername]
 	if !exists {
-		return nil, fmt.Errorf("The %s doesn't exist.", foldername)
+		return nil, errorDoesntExisted(foldername)
 	}
 
 	files := make([]*File, 0, len(folder.Files))
@@ -189,11 +210,11 @@ func ListFiles(username, foldername, sortBy, order string) ([]*File, error) {
 func DeleteFolder(username, foldername string) error {
 	user, exists := users[username]
 	if !exists {
-		return fmt.Errorf("The %s doesn't exist.", username)
+		return errorDoesntExisted(username)
 	}
 
 	if _, exists := user.Folders[foldername]; !exists {
-		return fmt.Errorf("The %s doesn't exist.", foldername)
+		return errorDoesntExisted(foldername)
 	}
 
 	delete(user.Folders, foldername)
@@ -204,16 +225,16 @@ func DeleteFolder(username, foldername string) error {
 func DeleteFile(username, foldername, filename string) error {
 	user, exists := users[username]
 	if !exists {
-		return fmt.Errorf("The %s doesn't exist.", username)
+		return errorDoesntExisted(username)
 	}
 
 	folder, exists := user.Folders[foldername]
 	if !exists {
-		return fmt.Errorf("The %s doesn't exist.", foldername)
+		return errorDoesntExisted(foldername)
 	}
 
 	if _, exists := folder.Files[filename]; !exists {
-		return fmt.Errorf("The %s doesn't exist.", filename)
+		return errorDoesntExisted(filename)
 	}
 
 	delete(folder.Files, filename)
@@ -224,19 +245,19 @@ func DeleteFile(username, foldername, filename string) error {
 func RenameFolder(username, foldername, newFolderName string) error {
 	user, exists := users[username]
 	if !exists {
-		return fmt.Errorf("The %s doesn't exist.", username)
+		return errorDoesntExisted(username)
 	}
 
 	if _, exists := user.Folders[foldername]; !exists {
-		return fmt.Errorf("The %s doesn't exist.", foldername)
+		return errorDoesntExisted(foldername)
 	}
-	
+
 	if !isValidName(newFolderName) {
-		return fmt.Errorf("The %s contains invalid chars.", newFolderName)
+		return errorInvalidChars(newFolderName)
 	}
 
 	if _, exists := user.Folders[newFolderName]; exists {
-		return fmt.Errorf("The %s has already existed.", newFolderName)
+		return errorAlreayExisted(newFolderName)
 	}
 
 	folder := user.Folders[foldername]

@@ -59,41 +59,46 @@ func TestHandleCommand(t *testing.T) {
 	internal.UseMockData(mockUsers)
 
 	tests := []struct {
-		command   string
-		args      []string
-		expected  string
-		shouldErr bool
+		command  string
+		args     []string
+		expected string
 	}{
-		{"register", []string{"user"}, "Add user successfully.\n", false},
-		{"create-folder", []string{"user", "folderA"}, "Create folderA successfully.\n", false},
-		{"list-folders", []string{"user"}, "folderA", false},
-		{"create-folder", []string{"user", "folderB"}, "Create folderB successfully.\n", false},
-		{"list-folders", []string{"user"}, "folderA\nfolderB", false},
-		{"list-folders", []string{"user", "--sort-name", "asc"}, "folderA\nfolderB", false},
-		{"list-folders", []string{"user", "--sort-name", "desc"}, "folderB\nfolderA", false},
-		{"list-folders", []string{"user", "--sort-created", "asc"}, "folderA\nfolderB", false},
-		{"list-folders", []string{"user", "--sort-created", "desc"}, "folderB\nfolderA", false},
+		{"register", []string{"user"}, "Add user successfully."},
+		{"create-folder", []string{"user", "folderA"}, "Create folderA successfully."},
+		{"list-folders", []string{"user"}, "folderA"},
+		{"create-folder", []string{"user", "folderB"}, "Create folderB successfully."},
+		{"list-folders", []string{"user"}, "folderA\nfolderB"},
+		{"list-folders", []string{"user", "--sort-name", "asc"}, "folderA\nfolderB"},
+		{"list-folders", []string{"user", "--sort-name", "desc"}, "folderB\nfolderA"},
+		{"list-folders", []string{"user", "--sort-created", "asc"}, "folderA\nfolderB"},
+		{"list-folders", []string{"user", "--sort-created", "desc"}, "folderB\nfolderA"},
 
-		{"register", []string{"user a"}, "Add \"user a\" successfully.\n", false},
-		{"create-folder", []string{"user a", "folder b", "folder b description"}, "Create \"folder b\" successfully.\n", false},
-		{"list-folders", []string{"user a"}, "\"folder b\" \"folder b description\"", false},
-		{"create-folder", []string{"user a", "folder c", "folder c description"}, "Create \"folder c\" successfully.\n", false},
-		{"list-folders", []string{"user a"}, "\"folder b\" \"folder b description\"\n\"folder c\" \"folder c description\"", false},
+		{"register", []string{"user a"}, "Add \"user a\" successfully."},
+		{"create-folder", []string{"user a", "folder b", "folder b description"}, "Create \"folder b\" successfully."},
+		{"list-folders", []string{"user a"}, "\"folder b\" \"folder b description\""},
+		{"create-folder", []string{"user a", "folder c", "folder c description"}, "Create \"folder c\" successfully."},
+		{"list-folders", []string{"user a"}, "\"folder b\" \"folder b description\"\n\"folder c\" \"folder c description\""},
 
-		{"register", []string{"u1"}, "Add u1 successfully.\n", false},
-		{"create-folder", []string{"u1", "folderA"}, "Create folderA successfully.\n", false},
-		{"list-folders", []string{"u1"}, "folderA", false},
-		{"delete-folder", []string{"u1", "folderA"}, "Delete folderA successfully.\n", false},
-		{"list-folders", []string{"u1"}, "", false},
+		{"register", []string{"user1"}, "Add user1 successfully.\n"},
+		{"create-folder", []string{"user1", "folder1"}, "Create folder1 successfully."},
+		{"list-folders", []string{"user1"}, "folder1"},
+		{"delete-folder", []string{"user1", "folder1"}, "Delete folder1 successfully."},
+		{"list-folders", []string{"user1"}, ""},
 
-		{"register", []string{"u2"}, "Add u2 successfully.\n", false},
-		{"register", []string{"u2"}, "Error: The u2 has already existed.\n", false},
+		{"register", []string{"user2"}, "Add user2 successfully."},
+		{"register", []string{"user2"}, "Error: The user2 has already existed."},
+		{"create-folder", []string{"user2", "folder2"}, "Create folder2 successfully."},
+		{"create-folder", []string{"user2", "folder2"}, "Error: The folder2 has already existed."},
+		{"create-file", []string{"user2", "folder2", "file2"}, "Create file2 successfully."},
+		{"create-file", []string{"user2", "folder2", "file2"}, "Error: The file2 has already existed."},
 
-		// {"list-files", []string{"testuser", "testfolder"}, "", false},
-		// {"delete-folder", []string{"testuser", "testfolder"}, "Delete folder \"testfolder\" successfully.\n", false},
-		// {"delete-file", []string{"testuser", "testfolder", "testfile"}, "Delete file \"testfile\" successfully.\n", false},
-		// {"rename-folder", []string{"testuser", "testfolder", "newfoldername"}, "Rename folder \"testfolder\" to \"newfoldername\" successfully.\n", false},
-		// {"unknown", []string{}, "Unrecognized command\n", true},
+		{"register", []string{"!"}, "Error: The ! contains invalid chars."},
+		{"register", []string{"user3"}, "Add user3 successfully.\n"},
+		{"create-folder", []string{"user3", "!"}, "Error: The ! contains invalid chars."},
+		{"create-folder", []string{"user3", "folder3"}, "Create folder3 successfully."},
+		{"create-file", []string{"user3", "folder3", "! !"}, "Error: The \"! !\" contains invalid chars."},
+
+		{"create-folder", []string{"user 4", "a"}, "Error: The \"user 4\" doesn't exist."},
 	}
 
 	for _, tt := range tests {
@@ -101,14 +106,8 @@ func TestHandleCommand(t *testing.T) {
 			output := captureOutput(func() {
 				handleCommand(tt.command, tt.args)
 			})
-			if tt.shouldErr {
-				if output == tt.expected {
-					t.Errorf("expected an error but got none")
-				}
-			} else {
-				if !checkOutput(tt.expected, output) {
-					t.Errorf("expected %q but got %q", tt.expected, output)
-				}
+			if !checkOutput(tt.expected, output) {
+				t.Errorf("expected %q but got %q", tt.expected, output)
 			}
 		})
 	}

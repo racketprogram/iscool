@@ -3,16 +3,24 @@ package internal
 
 import (
 	"fmt"
+	"regexp"
 	"sort"
 	"time"
 )
+
+// isValidName validates the name, allowing letters, numbers, spaces, underscores, and hyphens, with a length of 1-50 characters.
+func isValidName(name string) bool {
+	// Define the regular expression for a valid name
+	var validNameRegex = regexp.MustCompile(`^[a-zA-Z0-9 _-]{1,50}$`)
+	return validNameRegex.MatchString(name)
+}
 
 // RegisterUser registers a new user with a unique username
 func RegisterUser(username string) error {
 	if _, exists := users[username]; exists {
 		return fmt.Errorf("The %s has already existed.", username)
 	}
-	if !isValidUsername(username) {
+	if !isValidName(username) {
 		return fmt.Errorf("The %s contains invalid chars.", username)
 	}
 	users[username] = &User{
@@ -31,6 +39,10 @@ func CreateFolder(username, foldername string, description ...string) error {
 
 	if _, exists := user.Folders[foldername]; exists {
 		return fmt.Errorf("The %s has already existed.", foldername)
+	}
+
+	if !isValidName(foldername) {
+		return fmt.Errorf("The %s contains invalid chars.", foldername)
 	}
 
 	desc := ""
@@ -59,9 +71,10 @@ func CreateFile(username, foldername, filename string, description ...string) er
 		return fmt.Errorf("The %s doesn't exist.", foldername)
 	}
 
-	if !isValidFilename(filename) {
+	if !isValidName(filename) {
 		return fmt.Errorf("The %s contains invalid chars.", filename)
 	}
+
 	if _, exists := folder.Files[filename]; exists {
 		return fmt.Errorf("The %s has already existed.", filename)
 	}
@@ -217,6 +230,11 @@ func RenameFolder(username, foldername, newFolderName string) error {
 	if _, exists := user.Folders[foldername]; !exists {
 		return fmt.Errorf("The %s doesn't exist.", foldername)
 	}
+	
+	if !isValidName(newFolderName) {
+		return fmt.Errorf("The %s contains invalid chars.", newFolderName)
+	}
+
 	if _, exists := user.Folders[newFolderName]; exists {
 		return fmt.Errorf("The %s has already existed.", newFolderName)
 	}
@@ -226,16 +244,4 @@ func RenameFolder(username, foldername, newFolderName string) error {
 	user.Folders[newFolderName] = folder
 	delete(user.Folders, foldername)
 	return SaveData()
-}
-
-// isValidUsername validates the username
-func isValidUsername(username string) bool {
-	// Add username validation logic
-	return true
-}
-
-// isValidFilename validates the filename
-func isValidFilename(filename string) bool {
-	// Add filename validation logic
-	return true
 }

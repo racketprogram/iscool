@@ -9,6 +9,8 @@ import (
 	"virtual-file-system/internal"
 )
 
+var quoteIfNeeded = internal.QuoteIfNeeded
+
 // parseArgs parses the input command and splits it into arguments considering quotes
 func parseArgs(input string) []string {
 	var args []string
@@ -33,14 +35,6 @@ func parseArgs(input string) []string {
 		args = append(args, current)
 	}
 	return args
-}
-
-// quoteIfNeeded adds double quotes around a string if it contains spaces
-func quoteIfNeeded(s string) string {
-	if strings.Contains(s, " ") {
-		return fmt.Sprintf("\"%s\"", s)
-	}
-	return s
 }
 
 // handleCommand processes a single command
@@ -91,7 +85,7 @@ func handleCommand(command string, args []string) {
 		if err != nil {
 			fmt.Println("Error:", err)
 		} else {
-			fmt.Println("Create file", quoteIfNeeded(filename), "successfully.")
+			fmt.Println("Create", quoteIfNeeded(filename), "successfully.")
 		}
 	case "list-folders":
 		if len(args) != 1 && len(args) != 3 {

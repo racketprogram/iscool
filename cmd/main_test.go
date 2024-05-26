@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"io"
 	"os"
+	"regexp"
 	"strings"
 	"testing"
 	"virtual-file-system/internal"
@@ -41,12 +42,18 @@ func checkOutput(expected, actual string) bool {
 	expectedLines := strings.Split(expected, "\n")
 	actualLines := strings.Split(actual, "\n")
 
-	if len(expectedLines) > len(actualLines) {
+	if len(expectedLines) != len(actualLines) {
 		return false
 	}
 
+	timePattern := `\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}`
+	re := regexp.MustCompile(timePattern)
+
 	for i := range expectedLines {
-		if !strings.HasPrefix(actualLines[i], expectedLines[i]) {
+		expectedLine := re.ReplaceAllString(expectedLines[i], "")
+		actualLine := re.ReplaceAllString(actualLines[i], "")
+
+		if strings.TrimSpace(expectedLine) != strings.TrimSpace(actualLine) {
 			return false
 		}
 	}
@@ -63,43 +70,66 @@ func TestHandleCommand(t *testing.T) {
 		args     []string
 		expected string
 	}{
-		{"register", []string{"user"}, "Add user successfully."},
-		{"create-folder", []string{"user", "folderA"}, "Create folderA successfully."},
-		{"list-folders", []string{"user"}, "folderA"},
-		{"create-folder", []string{"user", "folderB"}, "Create folderB successfully."},
-		{"list-folders", []string{"user"}, "folderA\nfolderB"},
-		{"list-folders", []string{"user", "--sort-name", "asc"}, "folderA\nfolderB"},
-		{"list-folders", []string{"user", "--sort-name", "desc"}, "folderB\nfolderA"},
-		{"list-folders", []string{"user", "--sort-created", "asc"}, "folderA\nfolderB"},
-		{"list-folders", []string{"user", "--sort-created", "desc"}, "folderB\nfolderA"},
+		// list folder
+		{"register", []string{"user"}, "Add user successfully.\n"},
+		{"create-folder", []string{"user", "folderA"}, "Create folderA successfully.\n"},
+		{"list-folders", []string{"user"}, "folderA 2000-01-01 20:34:19 user\n"},
+		{"create-folder", []string{"user", "folderB"}, "Create folderB successfully.\n"},
+		{"list-folders", []string{"user"}, "folderA 2000-01-01 20:34:19 user\nfolderB 2000-01-01 20:34:19 user\n"},
+		{"list-folders", []string{"user"}, "folderA 2000-01-01 20:34:19 user\nfolderB 2000-01-01 20:34:19 user\n"},
+		{"list-folders", []string{"user", "--sort-name", "asc"}, "folderA 2000-01-01 20:34:19 user\nfolderB 2000-01-01 20:34:19 user\n"},
+		{"list-folders", []string{"user", "--sort-name", "desc"}, "folderB 2000-01-01 20:34:19 user\nfolderA 2000-01-01 20:34:19 user\n"},
+		{"list-folders", []string{"user", "--sort-created", "asc"}, "folderA 2000-01-01 20:34:19 user\nfolderB 2000-01-01 20:34:19 user\n"},
+		{"list-folders", []string{"user", "--sort-created", "desc"}, "folderB 2000-01-01 20:34:19 user\nfolderA 2000-01-01 20:34:19 user\n"},
+		{"list-folders", []string{"user", "--sort-created"}, "Usage: list-folders [username] [--sort-name|--sort-created] [asc|desc]\n"},
+		{"create-file", []string{"user", "folderA", "fileA"}, "Create fileA in user/folderA successfully.\n"},
+		{"create-file", []string{"user", "folderA", "fileB"}, "Create fileB in user/folderA successfully.\n"},
+		{"list-files", []string{"user", "folderA"}, "fileA 2000-01-01 20:34:19 folderA user\nfileB 2000-01-01 20:34:19 folderA user\n"},
+		{"list-files", []string{"user", "folderA", "--sort-name", "asc"}, "fileA 2000-01-01 20:34:19 folderA user\nfileB 2000-01-01 20:34:19 folderA user\n"},
+		{"list-files", []string{"user", "folderA", "--sort-name", "desc"}, "fileB 2000-01-01 20:34:19 folderA user\nfileA 2000-01-01 20:34:19 folderA user\n"},
+		{"list-files", []string{"user", "folderA", "--sort-created", "asc"}, "fileA 2000-01-01 20:34:19 folderA user\nfileB 2000-01-01 20:34:19 folderA user\n"},
+		{"list-files", []string{"user", "folderA", "--sort-created", "desc"}, "fileB 2000-01-01 20:34:19 folderA user\nfileA 2000-01-01 20:34:19 folderA user\n"},
 
-		{"register", []string{"user a"}, "Add \"user a\" successfully."},
-		{"create-folder", []string{"user a", "folder b", "folder b description"}, "Create \"folder b\" successfully."},
-		{"list-folders", []string{"user a"}, "\"folder b\" \"folder b description\""},
-		{"create-folder", []string{"user a", "folder c", "folder c description"}, "Create \"folder c\" successfully."},
-		{"list-folders", []string{"user a"}, "\"folder b\" \"folder b description\"\n\"folder c\" \"folder c description\""},
-		{"create-file", []string{"user a", "folder c", "file c"}, "Create \"file c\" in \"user a\"/\"folder c\" successfully."},
+		// quote name
+		{"register", []string{"user 0"}, "Add \"user 0\" successfully.\n"},
+		{"create-folder", []string{"user 0", "folder b", "folder b description"}, "Create \"folder b\" successfully.\n"},
+		{"list-folders", []string{"user 0"}, "\"folder b\" \"folder b description\" 2000-01-01 20:34:19 \"user 0\"\n"},
+		{"create-folder", []string{"user 0", "folder c", "folder c description"}, "Create \"folder c\" successfully.\n"},
+		{"list-folders", []string{"user 0"}, "\"folder b\" \"folder b description\" 2000-01-01 20:34:19 \"user 0\"\n\"folder c\" \"folder c description\" 2000-01-01 20:34:19 \"user 0\"\n"},
+		{"create-file", []string{"user 0", "folder c", "file c"}, "Create \"file c\" in \"user 0\"/\"folder c\" successfully.\n"},
 
+		// delete folder
 		{"register", []string{"user1"}, "Add user1 successfully.\n"},
-		{"create-folder", []string{"user1", "folder1"}, "Create folder1 successfully."},
-		{"list-folders", []string{"user1"}, "folder1"},
-		{"delete-folder", []string{"user1", "folder1"}, "Delete folder1 successfully."},
-		{"list-folders", []string{"user1"}, ""},
+		{"create-folder", []string{"user1", "folder1"}, "Create folder1 successfully.\n"},
+		{"list-folders", []string{"user1"}, "folder1 2000-01-01 20:34:19 user1\n"},
+		{"delete-folder", []string{"user1", "folder1"}, "Delete folder1 successfully.\n"},
+		{"list-folders", []string{"user1"}, "Warning: The user1 doesn't have any folders.\n"},
 
-		{"register", []string{"user2"}, "Add user2 successfully."},
-		{"register", []string{"user2"}, "Error: The user2 has already existed."},
-		{"create-folder", []string{"user2", "folder2"}, "Create folder2 successfully."},
-		{"create-folder", []string{"user2", "folder2"}, "Error: The folder2 has already existed."},
-		{"create-file", []string{"user2", "folder2", "file2"}, "Create file2 in user2/folder2 successfully."},
-		{"create-file", []string{"user2", "folder2", "file2"}, "Error: The file2 has already existed."},
+		// already existed
+		{"register", []string{"user2"}, "Add user2 successfully.\n"},
+		{"register", []string{"user2"}, "Error: The user2 has already existed.\n"},
+		{"create-folder", []string{"user2", "folder2"}, "Create folder2 successfully.\n"},
+		{"create-folder", []string{"user2", "folder2"}, "Error: The folder2 has already existed.\n"},
+		{"create-file", []string{"user2", "folder2", "file2"}, "Create file2 in user2/folder2 successfully.\n"},
+		{"create-file", []string{"user2", "folder2", "file2"}, "Error: The file2 has already existed.\n"},
 
-		{"register", []string{"!"}, "Error: The ! contains invalid chars."},
+		// invalid name
+		{"register", []string{"!"}, "Error: The ! contains invalid chars.\n"},
 		{"register", []string{"user3"}, "Add user3 successfully.\n"},
-		{"create-folder", []string{"user3", "!"}, "Error: The ! contains invalid chars."},
-		{"create-folder", []string{"user3", "folder3"}, "Create folder3 successfully."},
-		{"create-file", []string{"user3", "folder3", "! !"}, "Error: The \"! !\" contains invalid chars."},
+		{"create-folder", []string{"user3", "!"}, "Error: The ! contains invalid chars.\n"},
+		{"create-folder", []string{"user3", "folder3"}, "Create folder3 successfully.\n"},
+		{"create-file", []string{"user3", "folder3", "! !"}, "Error: The \"! !\" contains invalid chars.\n"},
 
-		{"create-folder", []string{"user 4", "a"}, "Error: The \"user 4\" doesn't exist."},
+		// user doesn't exist
+		{"create-folder", []string{"user 4", "a"}, "Error: The \"user 4\" doesn't exist.\n"},
+
+		// rename folder
+		{"register", []string{"user5"}, "Add user5 successfully.\n"},
+		{"create-folder", []string{"user5", "folder5"}, "Create folder5 successfully.\n"},
+		{"create-file", []string{"user5", "folder5", "file5"}, "Create file5 in user5/folder5 successfully.\n"},
+		{"rename-folder", []string{"user5", "folder5", "folder5-1"}, "Rename folder5 to folder5-1 successfully.\n"},
+		{"list-folders", []string{"user5"}, "folder5-1 2000-01-01 20:34:19 user5\n"},
+		{"list-files", []string{"user5", "folder5-1"}, "file5 2000-01-01 20:34:19 folder5-1 user5\n"},
 	}
 
 	for _, tt := range tests {

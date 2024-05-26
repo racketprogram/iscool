@@ -4,6 +4,7 @@ This is a virtual file system implemented in Go, allowing users to create, list,
 
 ## Features
 
+- Help
 - Register users
 - Create folders and files
 - List folders and files with optional sorting
@@ -17,6 +18,17 @@ This is a virtual file system implemented in Go, allowing users to create, list,
 0. **help**
    
    Shows all the commands.
+   ```sh
+   > help
+    Usage: register [username]
+    Usage: create-folder [username] [foldername] [description]?
+    Usage: create-file [username] [foldername] [filename] [description]?
+    Usage: list-folders [username] [--sort-name|--sort-created] [asc|desc]
+    Usage: list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]
+    Usage: delete-folder [username] [foldername]
+    Usage: delete-file [username] [foldername] [filename]
+    Usage: rename-folder [username] [foldername] [new-folder-name]
+   ```
 
 1. **register [username]**
 
@@ -99,3 +111,20 @@ This is a virtual file system implemented in Go, allowing users to create, list,
 
 8. **rename-folder [username] [foldername] [new-folder-name]**
     Renames the specified folder for the user.
+
+## Input Validation Rules
+
+### Usernames:
+
+- Can contain letters, numbers, spaces, underscores (`_`), and hyphens (`-`).
+- Length: 1-50 characters.
+
+### Folder names:
+
+- Can contain letters, numbers, spaces, underscores (`_`), and hyphens (`-`).
+- Length: 1-50 characters.
+
+### File names:
+
+- Can contain letters, numbers, spaces, underscores (`_`), and hyphens (`-`).
+- Length: 1-50 characters.

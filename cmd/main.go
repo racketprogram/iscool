@@ -67,7 +67,7 @@ func handleCommand(command string, args []string) {
 		username := args[0]
 		err := internal.RegisterUser(username)
 		if err != nil {
-			fmt.Println("Error:", err)
+			fmt.Fprintln(os.Stderr, "Error:", err)
 		} else {
 			fmt.Println("Add", quoteIfNeeded(username), "successfully.")
 		}
@@ -84,7 +84,7 @@ func handleCommand(command string, args []string) {
 		}
 		err := internal.CreateFolder(username, foldername, description)
 		if err != nil {
-			fmt.Println("Error:", err)
+			fmt.Fprintln(os.Stderr, "Error:", err)
 		} else {
 			fmt.Println("Create", quoteIfNeeded(foldername), "successfully.")
 		}
@@ -102,7 +102,7 @@ func handleCommand(command string, args []string) {
 		}
 		err := internal.CreateFile(username, foldername, filename, description)
 		if err != nil {
-			fmt.Println("Error:", err)
+			fmt.Fprintln(os.Stderr, "Error:", err)
 		} else {
 			fmt.Printf("Create %s in %s/%s successfully.\n", quoteIfNeeded(filename), quoteIfNeeded(username), quoteIfNeeded(foldername))
 		}
@@ -124,7 +124,7 @@ func handleCommand(command string, args []string) {
 		}
 		folders, err := internal.ListFolders(username, sortBy, order)
 		if err != nil {
-			fmt.Println("Error:", err)
+			fmt.Fprintln(os.Stderr, "Error:", err)
 			return
 		}
 		for _, folder := range folders {
@@ -153,7 +153,7 @@ func handleCommand(command string, args []string) {
 		}
 		files, err := internal.ListFiles(username, foldername, sortBy, order)
 		if err != nil {
-			fmt.Println("Error:", err)
+			fmt.Fprintln(os.Stderr, "Error:", err)
 			return
 		}
 		for _, file := range files {
@@ -172,7 +172,7 @@ func handleCommand(command string, args []string) {
 		foldername := args[1]
 		err := internal.DeleteFolder(username, foldername)
 		if err != nil {
-			fmt.Println("Error:", err)
+			fmt.Fprintln(os.Stderr, "Error:", err)
 		} else {
 			fmt.Println("Delete", quoteIfNeeded(foldername), "successfully.")
 		}
@@ -186,7 +186,7 @@ func handleCommand(command string, args []string) {
 		filename := args[2]
 		err := internal.DeleteFile(username, foldername, filename)
 		if err != nil {
-			fmt.Println("Error:", err)
+			fmt.Fprintln(os.Stderr, "Error:", err)
 		} else {
 			fmt.Println("Delete", quoteIfNeeded(filename), "successfully.")
 		}
@@ -200,7 +200,7 @@ func handleCommand(command string, args []string) {
 		newFolderName := args[2]
 		err := internal.RenameFolder(username, foldername, newFolderName)
 		if err != nil {
-			fmt.Println("Error:", err)
+			fmt.Fprintln(os.Stderr, "Error:", err)
 		} else {
 			fmt.Println("Rename", quoteIfNeeded(foldername), "to", quoteIfNeeded(newFolderName), "successfully.")
 		}

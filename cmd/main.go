@@ -127,6 +127,10 @@ func handleCommand(command string, args []string) {
 			fmt.Fprintln(os.Stderr, "Error:", err)
 			return
 		}
+		if len(folders) == 0 {
+			fmt.Printf("Warning: The %s doesn't have any folders.\n", quoteIfNeeded(username))
+			return
+		}
 		for _, folder := range folders {
 			if folder.Description != "" {
 				fmt.Printf("%s %s %s %s\n", quoteIfNeeded(folder.Name), quoteIfNeeded(folder.Description), folder.CreatedAt.Format("2006-01-02 15:04:05"), quoteIfNeeded(username))
@@ -156,11 +160,15 @@ func handleCommand(command string, args []string) {
 			fmt.Fprintln(os.Stderr, "Error:", err)
 			return
 		}
+		if len(files) == 0 {
+			fmt.Println("Warning: The folder is empty.")
+			return
+		}
 		for _, file := range files {
 			if file.Description != "" {
-				fmt.Printf("%s %s %s %s\n", quoteIfNeeded(file.Name), quoteIfNeeded(file.Description), file.CreatedAt.Format("2006-01-02 15:04:05"), quoteIfNeeded(username))
+				fmt.Printf("%s %s %s %s %s\n", quoteIfNeeded(file.Name), quoteIfNeeded(file.Description), file.CreatedAt.Format("2006-01-02 15:04:05"), quoteIfNeeded(foldername), quoteIfNeeded(username))
 			} else {
-				fmt.Printf("%s %s %s\n", quoteIfNeeded(file.Name), file.CreatedAt.Format("2006-01-02 15:04:05"), quoteIfNeeded(username))
+				fmt.Printf("%s %s %s %s\n", quoteIfNeeded(file.Name), file.CreatedAt.Format("2006-01-02 15:04:05"), quoteIfNeeded(foldername), quoteIfNeeded(username))
 			}
 		}
 	case "delete-folder":

@@ -193,7 +193,7 @@ func ListFiles(username, foldername, sortBy, order string) ([]*File, error) {
 	case "created":
 		sort.Slice(files, func(i, j int) bool {
 			if order == "desc" {
-				return files[i].CreatedAt.After(files[j].CreatedAt)
+				return !files[i].CreatedAt.Before(files[j].CreatedAt)
 			}
 			return files[i].CreatedAt.Before(files[j].CreatedAt)
 		})

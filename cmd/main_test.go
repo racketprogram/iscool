@@ -70,7 +70,7 @@ func TestHandleCommand(t *testing.T) {
 		args     []string
 		expected string
 	}{
-		// list folder
+		// list folder and file
 		{"register", []string{"user"}, "Add user successfully.\n"},
 		{"create-folder", []string{"user", "folderA"}, "Create folderA successfully.\n"},
 		{"list-folders", []string{"user"}, "folderA 2000-01-01 20:34:19 user\n"},
@@ -93,15 +93,19 @@ func TestHandleCommand(t *testing.T) {
 		// quote name
 		{"register", []string{"user 0"}, "Add \"user 0\" successfully.\n"},
 		{"create-folder", []string{"user 0", "folder b", "folder b description"}, "Create \"folder b\" successfully.\n"},
-		{"list-folders", []string{"user 0"}, "\"folder b\" \"folder b description\" 2000-01-01 20:34:19 \"user 0\"\n"},
 		{"create-folder", []string{"user 0", "folder c", "folder c description"}, "Create \"folder c\" successfully.\n"},
 		{"list-folders", []string{"user 0"}, "\"folder b\" \"folder b description\" 2000-01-01 20:34:19 \"user 0\"\n\"folder c\" \"folder c description\" 2000-01-01 20:34:19 \"user 0\"\n"},
-		{"create-file", []string{"user 0", "folder c", "file c"}, "Create \"file c\" in \"user 0\"/\"folder c\" successfully.\n"},
+		{"create-file", []string{"user 0", "folder c", "file c-1"}, "Create \"file c-1\" in \"user 0\"/\"folder c\" successfully.\n"},
+		{"create-file", []string{"user 0", "folder c", "file c-2"}, "Create \"file c-2\" in \"user 0\"/\"folder c\" successfully.\n"},
+		{"list-files", []string{"user 0", "folder c"}, "\"file c-1\" 2000-01-01 20:34:19 \"folder c\" \"user 0\"\n\"file c-2\" 2000-01-01 20:34:19 \"folder c\" \"user 0\"\n"},
 
-		// delete folder
+		// delete file and folder
 		{"register", []string{"user1"}, "Add user1 successfully.\n"},
 		{"create-folder", []string{"user1", "folder1"}, "Create folder1 successfully.\n"},
 		{"list-folders", []string{"user1"}, "folder1 2000-01-01 20:34:19 user1\n"},
+		{"create-file", []string{"user1", "folder1", "file1"}, "Create file1 in user1/folder1 successfully.\n"},
+		{"list-files", []string{"user1", "folder1"}, "file1 2000-01-01 20:34:19 folder1 user1\n"},
+		{"delete-file", []string{"user1", "folder1", "file1"}, "Delete file1 in user1/folder1 successfully.\n"},
 		{"delete-folder", []string{"user1", "folder1"}, "Delete folder1 successfully.\n"},
 		{"list-folders", []string{"user1"}, "Warning: The user1 doesn't have any folders.\n"},
 
@@ -138,7 +142,7 @@ func TestHandleCommand(t *testing.T) {
 				handleCommand(tt.command, tt.args)
 			})
 			if !checkOutput(tt.expected, output) {
-				t.Errorf("expected %q but got %q", tt.expected, output)
+				t.Errorf("command: %v, args: %v\nexpected: %q\nbut got: %q", tt.command, tt.args, tt.expected, output)
 			}
 		})
 	}

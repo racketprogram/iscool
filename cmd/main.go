@@ -196,7 +196,7 @@ func handleCommand(command string, args []string) {
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error:", err)
 		} else {
-			fmt.Println("Delete", quoteIfNeeded(filename), "successfully.")
+			fmt.Printf("Delete %s in %s/%s successfully.\n", quoteIfNeeded(filename), quoteIfNeeded(username), quoteIfNeeded(foldername))
 		}
 	case "rename-folder":
 		if len(args) != 3 {

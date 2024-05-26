@@ -52,7 +52,7 @@ func RegisterUser(username string) error {
 }
 
 // CreateFolder creates a new folder for a user
-func CreateFolder(username, foldername string, description ...string) error {
+func CreateFolder(username, foldername string, description string) error {
 	user, exists := users[username]
 	if !exists {
 		return errorDoesntExisted(username)
@@ -66,14 +66,9 @@ func CreateFolder(username, foldername string, description ...string) error {
 		return errorInvalidChars(foldername)
 	}
 
-	desc := ""
-	if len(description) > 0 {
-		desc = description[0]
-	}
-
 	user.Folders[foldername] = &Folder{
 		Name:        foldername,
-		Description: desc,
+		Description: description,
 		CreatedAt:   time.Now(),
 		Files:       make(map[string]*File),
 	}
@@ -81,7 +76,7 @@ func CreateFolder(username, foldername string, description ...string) error {
 }
 
 // CreateFile creates a new file in a user's folder
-func CreateFile(username, foldername, filename string, description ...string) error {
+func CreateFile(username, foldername, filename string, description string) error {
 	user, exists := users[username]
 	if !exists {
 		return errorDoesntExisted(username)
@@ -100,14 +95,9 @@ func CreateFile(username, foldername, filename string, description ...string) er
 		return errorAlreayExisted(filename)
 	}
 
-	desc := ""
-	if len(description) > 0 {
-		desc = description[0]
-	}
-
 	folder.Files[filename] = &File{
 		Name:        filename,
-		Description: desc,
+		Description: description,
 		CreatedAt:   time.Now(),
 	}
 	return SaveData()

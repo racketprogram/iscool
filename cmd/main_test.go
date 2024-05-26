@@ -78,6 +78,7 @@ func TestHandleCommand(t *testing.T) {
 		{"list-folders", []string{"user a"}, "\"folder b\" \"folder b description\""},
 		{"create-folder", []string{"user a", "folder c", "folder c description"}, "Create \"folder c\" successfully."},
 		{"list-folders", []string{"user a"}, "\"folder b\" \"folder b description\"\n\"folder c\" \"folder c description\""},
+		{"create-file", []string{"user a", "folder c", "file c"}, "Create \"file c\" in \"user a\"/\"folder c\" successfully."},
 
 		{"register", []string{"user1"}, "Add user1 successfully.\n"},
 		{"create-folder", []string{"user1", "folder1"}, "Create folder1 successfully."},
@@ -89,7 +90,7 @@ func TestHandleCommand(t *testing.T) {
 		{"register", []string{"user2"}, "Error: The user2 has already existed."},
 		{"create-folder", []string{"user2", "folder2"}, "Create folder2 successfully."},
 		{"create-folder", []string{"user2", "folder2"}, "Error: The folder2 has already existed."},
-		{"create-file", []string{"user2", "folder2", "file2"}, "Create file2 successfully."},
+		{"create-file", []string{"user2", "folder2", "file2"}, "Create file2 in user2/folder2 successfully."},
 		{"create-file", []string{"user2", "folder2", "file2"}, "Error: The file2 has already existed."},
 
 		{"register", []string{"!"}, "Error: The ! contains invalid chars."},

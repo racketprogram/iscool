@@ -11,6 +11,25 @@ import (
 
 var quoteIfNeeded = internal.QuoteIfNeeded
 
+var commnadRegister = "Usage: register [username]"
+var commnadCreateFolder = "Usage: create-folder [username] [foldername] [description]?"
+var commnadCreateFile = "Usage: create-file [username] [foldername] [filename] [description]?"
+var commnadListFolders = "Usage: list-folders [username] [--sort-name|--sort-created] [asc|desc]"
+var commnadListFiles = "Usage: list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]"
+var commandDeleteFolder = "Usage: delete-folder [username] [foldername]"
+var commandDeleteFile = "Usage: delete-file [username] [foldername] [filename]"
+var commandRenameFolder = "Usage: rename-folder [username] [foldername] [new-folder-name]"
+var commands = []string{
+	commnadRegister,
+	commnadCreateFolder,
+	commnadCreateFile,
+	commnadListFolders,
+	commnadListFiles,
+	commandDeleteFolder,
+	commandDeleteFile,
+	commandRenameFolder,
+}
+
 // parseArgs parses the input command and splits it into arguments considering quotes
 func parseArgs(input string) []string {
 	var args []string
@@ -42,7 +61,7 @@ func handleCommand(command string, args []string) {
 	switch command {
 	case "register":
 		if len(args) != 1 {
-			fmt.Println("Usage: register [username]")
+			fmt.Println(commnadRegister)
 			return
 		}
 		username := args[0]
@@ -54,7 +73,7 @@ func handleCommand(command string, args []string) {
 		}
 	case "create-folder":
 		if len(args) < 2 || len(args) > 3 {
-			fmt.Println("Usage: create-folder [username] [foldername] [description]?")
+			fmt.Println(commnadCreateFolder)
 			return
 		}
 		username := args[0]
@@ -71,7 +90,7 @@ func handleCommand(command string, args []string) {
 		}
 	case "create-file":
 		if len(args) < 3 || len(args) > 4 {
-			fmt.Println("Usage: create-file [username] [foldername] [filename] [description]?")
+			fmt.Println(commnadCreateFile)
 			return
 		}
 		username := args[0]
@@ -85,11 +104,11 @@ func handleCommand(command string, args []string) {
 		if err != nil {
 			fmt.Println("Error:", err)
 		} else {
-			fmt.Printf("Create %s in %s/%s successfully.\n",quoteIfNeeded(filename), quoteIfNeeded(username), quoteIfNeeded(foldername))
+			fmt.Printf("Create %s in %s/%s successfully.\n", quoteIfNeeded(filename), quoteIfNeeded(username), quoteIfNeeded(foldername))
 		}
 	case "list-folders":
 		if len(args) != 1 && len(args) != 3 {
-			fmt.Println("Usage: list-folders [username] [--sort-name|--sort-created] [asc|desc]")
+			fmt.Println(commnadListFolders)
 			return
 		}
 		username := args[0]
@@ -99,7 +118,7 @@ func handleCommand(command string, args []string) {
 			sortBy = strings.TrimPrefix(args[1], "--sort-")
 			order = args[2]
 			if order != "asc" && order != "desc" {
-				fmt.Println("Usage: list-folders [username] [--sort-name|--sort-created] [asc|desc]")
+				fmt.Println(commnadListFolders)
 				return
 			}
 		}
@@ -117,7 +136,7 @@ func handleCommand(command string, args []string) {
 		}
 	case "list-files":
 		if len(args) != 2 && len(args) != 4 {
-			fmt.Println("Usage: list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]")
+			fmt.Println(commnadListFiles)
 			return
 		}
 		username := args[0]
@@ -128,7 +147,7 @@ func handleCommand(command string, args []string) {
 			sortBy = strings.TrimPrefix(args[2], "--sort-")
 			order = args[3]
 			if order != "asc" && order != "desc" {
-				fmt.Println("Usage: list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]")
+				fmt.Println(commnadListFiles)
 				return
 			}
 		}
@@ -146,7 +165,7 @@ func handleCommand(command string, args []string) {
 		}
 	case "delete-folder":
 		if len(args) != 2 {
-			fmt.Println("Usage: delete-folder [username] [foldername]")
+			fmt.Println(commandDeleteFolder)
 			return
 		}
 		username := args[0]
@@ -159,7 +178,7 @@ func handleCommand(command string, args []string) {
 		}
 	case "delete-file":
 		if len(args) != 3 {
-			fmt.Println("Usage: delete-file [username] [foldername] [filename]")
+			fmt.Println(commandDeleteFile)
 			return
 		}
 		username := args[0]
@@ -173,7 +192,7 @@ func handleCommand(command string, args []string) {
 		}
 	case "rename-folder":
 		if len(args) != 3 {
-			fmt.Println("Usage: rename-folder [username] [foldername] [new-folder-name]")
+			fmt.Println(commandRenameFolder)
 			return
 		}
 		username := args[0]
@@ -188,6 +207,10 @@ func handleCommand(command string, args []string) {
 	case "exit":
 		fmt.Println("Exiting REPL...")
 		os.Exit(0)
+	case "help":
+		for _, command := range commands {
+			fmt.Println(command)
+		}
 	default:
 		fmt.Println("Unrecognized command")
 	}
@@ -201,6 +224,7 @@ func main() {
 
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Virtual File System REPL")
+	fmt.Println("Type `help` to show the commands.")
 	fmt.Println("------------------------")
 	for {
 		fmt.Print("> ")

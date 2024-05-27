@@ -72,23 +72,23 @@ func TestHandleCommand(t *testing.T) {
 	}{
 		// list folder and file
 		{"register", []string{"user"}, "Add user successfully.\n"},
-		{"create-folder", []string{"user", "folderA"}, "Create folderA successfully.\n"},
-		{"list-folders", []string{"user"}, "folderA 2000-01-01 20:34:19 user\n"},
-		{"create-folder", []string{"user", "folderB"}, "Create folderB successfully.\n"},
-		{"list-folders", []string{"user"}, "folderA 2000-01-01 20:34:19 user\nfolderB 2000-01-01 20:34:19 user\n"},
-		{"list-folders", []string{"user"}, "folderA 2000-01-01 20:34:19 user\nfolderB 2000-01-01 20:34:19 user\n"},
-		{"list-folders", []string{"user", "--sort-name", "asc"}, "folderA 2000-01-01 20:34:19 user\nfolderB 2000-01-01 20:34:19 user\n"},
-		{"list-folders", []string{"user", "--sort-name", "desc"}, "folderB 2000-01-01 20:34:19 user\nfolderA 2000-01-01 20:34:19 user\n"},
-		{"list-folders", []string{"user", "--sort-created", "asc"}, "folderA 2000-01-01 20:34:19 user\nfolderB 2000-01-01 20:34:19 user\n"},
-		{"list-folders", []string{"user", "--sort-created", "desc"}, "folderB 2000-01-01 20:34:19 user\nfolderA 2000-01-01 20:34:19 user\n"},
+		{"create-folder", []string{"user", "folder_a"}, "Create folder_a successfully.\n"},
+		{"list-folders", []string{"user"}, "folder_a 2000-01-01 20:34:19 user\n"},
+		{"create-folder", []string{"user", "folder_b"}, "Create folder_b successfully.\n"},
+		{"list-folders", []string{"user"}, "folder_a 2000-01-01 20:34:19 user\nfolder_b 2000-01-01 20:34:19 user\n"},
+		{"list-folders", []string{"user"}, "folder_a 2000-01-01 20:34:19 user\nfolder_b 2000-01-01 20:34:19 user\n"},
+		{"list-folders", []string{"user", "--sort-name", "asc"}, "folder_a 2000-01-01 20:34:19 user\nfolder_b 2000-01-01 20:34:19 user\n"},
+		{"list-folders", []string{"user", "--sort-name", "desc"}, "folder_b 2000-01-01 20:34:19 user\nfolder_a 2000-01-01 20:34:19 user\n"},
+		{"list-folders", []string{"user", "--sort-created", "asc"}, "folder_a 2000-01-01 20:34:19 user\nfolder_b 2000-01-01 20:34:19 user\n"},
+		{"list-folders", []string{"user", "--sort-created", "desc"}, "folder_b 2000-01-01 20:34:19 user\nfolder_a 2000-01-01 20:34:19 user\n"},
 		{"list-folders", []string{"user", "--sort-created"}, "Usage: list-folders [username] [--sort-name|--sort-created] [asc|desc]\n"},
-		{"create-file", []string{"user", "folderA", "fileA"}, "Create fileA in user/folderA successfully.\n"},
-		{"create-file", []string{"user", "folderA", "fileB"}, "Create fileB in user/folderA successfully.\n"},
-		{"list-files", []string{"user", "folderA"}, "fileA 2000-01-01 20:34:19 folderA user\nfileB 2000-01-01 20:34:19 folderA user\n"},
-		{"list-files", []string{"user", "folderA", "--sort-name", "asc"}, "fileA 2000-01-01 20:34:19 folderA user\nfileB 2000-01-01 20:34:19 folderA user\n"},
-		{"list-files", []string{"user", "folderA", "--sort-name", "desc"}, "fileB 2000-01-01 20:34:19 folderA user\nfileA 2000-01-01 20:34:19 folderA user\n"},
-		{"list-files", []string{"user", "folderA", "--sort-created", "asc"}, "fileA 2000-01-01 20:34:19 folderA user\nfileB 2000-01-01 20:34:19 folderA user\n"},
-		{"list-files", []string{"user", "folderA", "--sort-created", "desc"}, "fileB 2000-01-01 20:34:19 folderA user\nfileA 2000-01-01 20:34:19 folderA user\n"},
+		{"create-file", []string{"user", "folder_a", "file_a"}, "Create file_a in user/folder_a successfully.\n"},
+		{"create-file", []string{"user", "folder_a", "file_b"}, "Create file_b in user/folder_a successfully.\n"},
+		{"list-files", []string{"user", "folder_a"}, "file_a 2000-01-01 20:34:19 folder_a user\nfile_b 2000-01-01 20:34:19 folder_a user\n"},
+		{"list-files", []string{"user", "folder_a", "--sort-name", "asc"}, "file_a 2000-01-01 20:34:19 folder_a user\nfile_b 2000-01-01 20:34:19 folder_a user\n"},
+		{"list-files", []string{"user", "folder_a", "--sort-name", "desc"}, "file_b 2000-01-01 20:34:19 folder_a user\nfile_a 2000-01-01 20:34:19 folder_a user\n"},
+		{"list-files", []string{"user", "folder_a", "--sort-created", "asc"}, "file_a 2000-01-01 20:34:19 folder_a user\nfile_b 2000-01-01 20:34:19 folder_a user\n"},
+		{"list-files", []string{"user", "folder_a", "--sort-created", "desc"}, "file_b 2000-01-01 20:34:19 folder_a user\nfile_a 2000-01-01 20:34:19 folder_a user\n"},
 
 		// quote name
 		{"register", []string{"user 0"}, "Add \"user 0\" successfully.\n"},
@@ -134,6 +134,13 @@ func TestHandleCommand(t *testing.T) {
 		{"rename-folder", []string{"user5", "folder5", "folder5-1"}, "Rename folder5 to folder5-1 successfully.\n"},
 		{"list-folders", []string{"user5"}, "folder5-1 2000-01-01 20:34:19 user5\n"},
 		{"list-files", []string{"user5", "folder5-1"}, "file5 2000-01-01 20:34:19 folder5-1 user5\n"},
+
+		// case insensitive and description
+		{"register", []string{"UseR6"}, "Add user6 successfully.\n"},
+		{"create-folder", []string{"UseR6", "FoldeR6", "FoldeR6 DESCRIPTION!"}, "Create folder6 successfully.\n"},
+		{"create-file", []string{"UseR6", "FoldeR6", "FilE6", "FilE6 DESCRIPTION!"}, "Create file6 in user6/folder6 successfully.\n"},
+		{"list-folders", []string{"UseR6"}, "folder6 \"FoldeR6 DESCRIPTION!\" 2000-01-01 20:34:19 user6\n"},
+		{"list-files", []string{"UseR6", "FoldeR6"}, "file6 \"FilE6 DESCRIPTION!\" 2000-01-01 20:34:19 folder6 user6\n"},
 	}
 
 	for _, tt := range tests {

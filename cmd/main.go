@@ -9,6 +9,8 @@ import (
 	"virtual-file-system/internal"
 )
 
+var caseInsensitive = true
+
 var quoteIfNeeded = internal.QuoteIfNeeded
 
 var commnadRegister = "Usage: register [username]"
@@ -65,6 +67,9 @@ func handleCommand(command string, args []string) {
 			return
 		}
 		username := args[0]
+		if caseInsensitive {
+			username = strings.ToLower(username)
+		}
 		err := internal.RegisterUser(username)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error:", err)
@@ -78,6 +83,10 @@ func handleCommand(command string, args []string) {
 		}
 		username := args[0]
 		foldername := args[1]
+		if caseInsensitive {
+			username = strings.ToLower(username)
+			foldername = strings.ToLower(foldername)
+		}
 		description := ""
 		if len(args) == 3 {
 			description = args[2]
@@ -96,6 +105,11 @@ func handleCommand(command string, args []string) {
 		username := args[0]
 		foldername := args[1]
 		filename := args[2]
+		if caseInsensitive {
+			username = strings.ToLower(username)
+			foldername = strings.ToLower(foldername)
+			filename = strings.ToLower(filename)
+		}
 		description := ""
 		if len(args) == 4 {
 			description = args[3]
@@ -112,6 +126,9 @@ func handleCommand(command string, args []string) {
 			return
 		}
 		username := args[0]
+		if caseInsensitive {
+			username = strings.ToLower(username)
+		}
 		sortBy := "name"
 		order := "asc"
 		if len(args) == 3 {
@@ -145,6 +162,10 @@ func handleCommand(command string, args []string) {
 		}
 		username := args[0]
 		foldername := args[1]
+		if caseInsensitive {
+			username = strings.ToLower(username)
+			foldername = strings.ToLower(foldername)
+		}
 		sortBy := "name"
 		order := "asc"
 		if len(args) == 4 {
@@ -178,6 +199,10 @@ func handleCommand(command string, args []string) {
 		}
 		username := args[0]
 		foldername := args[1]
+		if caseInsensitive {
+			username = strings.ToLower(username)
+			foldername = strings.ToLower(foldername)
+		}
 		err := internal.DeleteFolder(username, foldername)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error:", err)
@@ -192,6 +217,11 @@ func handleCommand(command string, args []string) {
 		username := args[0]
 		foldername := args[1]
 		filename := args[2]
+		if caseInsensitive {
+			username = strings.ToLower(username)
+			foldername = strings.ToLower(foldername)
+			filename = strings.ToLower(filename)
+		}
 		err := internal.DeleteFile(username, foldername, filename)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error:", err)
@@ -206,6 +236,11 @@ func handleCommand(command string, args []string) {
 		username := args[0]
 		foldername := args[1]
 		newFolderName := args[2]
+		if caseInsensitive {
+			username = strings.ToLower(username)
+			foldername = strings.ToLower(foldername)
+			newFolderName = strings.ToLower(newFolderName)
+		}
 		err := internal.RenameFolder(username, foldername, newFolderName)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error:", err)

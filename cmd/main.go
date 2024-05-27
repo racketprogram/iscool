@@ -30,6 +30,7 @@ var commands = []string{
 	commandDeleteFolder,
 	commandDeleteFile,
 	commandRenameFolder,
+	"\nnote: [username] [foldername] and [filename] are case insensitive.",
 }
 
 // parseArgs parses the input command and splits it into arguments considering quotes

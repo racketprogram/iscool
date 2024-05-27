@@ -1,6 +1,12 @@
 # Virtual File System
 
-This is a virtual file system implemented in Go, allowing users to create, list, rename, and delete folders and files.
+This is a virtual file system implemented in Go, allowing users to create, list, rename, and delete folders and files. The system uses JSON for data storage, ensuring a simple and portable way to manage the file system's state. The JSON file, data.json, is used to persist user data, folders, and files across sessions.
+
+## Design Principles
+- Simplicity: Uses JSON for data storage, providing a straightforward and human-readable format.
+- Portability: The system can be easily moved or shared, as it relies on a single JSON file for data persistence.
+- Robustness: Designed to handle typical file system operations with clear input validation to ensure data integrity.
+- Ease of Use: Provides a simple REPL (Read-Eval-Print Loop) interface for interacting with the virtual file system.
 
 ## Features
 
@@ -12,7 +18,38 @@ This is a virtual file system implemented in Go, allowing users to create, list,
 - Delete folders and files
 - Input validation for usernames, folder names, and file names
 
+## Build
+
+To build the project, you need to have Go installed on your machine. Follow the instructions below to clone the repository and build the executable.
+
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/racketprogram/iscool.git
+   cd iscool
+   ```
+
+2. Build the project:
+    ```sh
+    go build -o vfs ./cmd/main.go
+    ```
+3. Run the executable:
+    ```sh
+    ./vfs
+    ```
+
+## Test
+### Integration test
+```sh
+go test ./cmd/...
+```
+### Unit test
+```sh
+go test ./internal/...
+```
+
 ## Usage
+
+The virtual file system is implemented as a REPL (Read-Eval-Print Loop) where users can type commands to interact with the system. Usernames, folder names, and file names are case-insensitive. Below are the available commands and their usage.
 
 ### Commands
 0. **help**
@@ -28,16 +65,18 @@ This is a virtual file system implemented in Go, allowing users to create, list,
     Usage: delete-folder [username] [foldername]
     Usage: delete-file [username] [foldername] [filename]
     Usage: rename-folder [username] [foldername] [new-folder-name]
+
+    [username] [foldername] and [filename] are case insensitive.
    ```
 
 1. **register [username]**
 
    Registers a new user with the specified username.
    ```sh
-   register user
+   register userA # It will actually be stored as "usera".
    ```
    ```sh
-   register "user A"
+   register "user A" # It will actually be stored as "user a".
    ```
 
 2. **create-folder [username] [foldername] [description]**
@@ -48,7 +87,7 @@ This is a virtual file system implemented in Go, allowing users to create, list,
    create-folder user folderA
    ```
    ```sh
-   create-folder user folderB "folderB description"
+   create-folder user folderA "folderB description"
    ```
    ```sh
    create-folder "user A" "folder A" "folder A description"
@@ -105,12 +144,34 @@ This is a virtual file system implemented in Go, allowing users to create, list,
 
     Deletes the specified folder for the user.
 
+    ```sh
+    delete-folder user folderA
+    ```
+    ```sh
+    delete-folder "user A" "folder A"
+    ```
+
 7. **delete-file [username] [foldername] [filename]**
    
     Deletes the specified file in the folder for the user.
 
+    ```sh
+    delete-file user folderA fileA
+    ```
+    ```sh
+    delete-file "user A" "folder A" "file A"
+    ```
+
 8. **rename-folder [username] [foldername] [new-folder-name]**
+   
     Renames the specified folder for the user.
+
+    ```sh
+    rename-folder user folderA newFolderName
+    ```
+    ```sh
+    rename-folder "user A" "folder A" "new folder name"
+    ```
 
 ## Input Validation Rules
 

@@ -134,7 +134,7 @@ func ListFolders(username, sortBy, order string) ([]*Folder, error) {
 	case "created":
 		sort.Slice(folders, func(i, j int) bool {
 			if order == "desc" {
-				return folders[i].CreatedAt.After(folders[j].CreatedAt)
+				return !folders[i].CreatedAt.Before(folders[j].CreatedAt)
 			}
 			return folders[i].CreatedAt.Before(folders[j].CreatedAt)
 		})

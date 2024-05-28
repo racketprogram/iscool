@@ -261,6 +261,13 @@ func handleCommand(command string, args []string) {
 }
 
 func main() {
+	if len(os.Args) > 1 {
+		if err := internal.SetDataFile(os.Args[1]); err != nil {
+			fmt.Fprintln(os.Stderr, "Error: invalid data file path:", err)
+			return
+		}
+	}
+
 	if err := internal.LoadData(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error: loading data:", err)
 		return

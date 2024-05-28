@@ -12,7 +12,7 @@ test_100_times:
 	.\run_test.bat
 
 build:
-	go build -o fs ./cmd/main.go
+	go build -o vfs ./cmd/main.go
 
 run:
 	./vfs

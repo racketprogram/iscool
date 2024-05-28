@@ -205,3 +205,16 @@ In the first example, the data will be stored in /path/to/custom_data.json. In t
 
 - Can contain letters, numbers, spaces, underscores (`_`), and hyphens (`-`).
 - Length: 1-50 characters.
+
+## Makefile
+
+This project includes a Makefile to simplify common tasks. Below are the targets defined in the Makefile:
+
+- `integration_test`: Run integration tests. It executes tests in the `./cmd/...` directory using the `go test` command and generates a test coverage report.
+- `unit_test`: Run unit tests. It executes tests in the `./internal/...` directory using the `go test` command and generates a test coverage report.
+- `test`: Run both integration and unit tests simultaneously.
+- `test_100_times`: Run tests 100 times using the `run_test.bat` script.
+- `build`: Compile the project, producing an executable named `vfs` from the `cmd/main.go` file.
+- `run`: Execute the compiled `vfs` executable.
+
+You can execute the desired target by running `make <target>` in the command line. For example, `make test` will run both integration and unit tests.

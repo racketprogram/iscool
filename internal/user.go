@@ -4,10 +4,26 @@ package internal
 import (
 	"fmt"
 	"regexp"
+	"runtime"
 	"sort"
 	"strings"
 	"time"
 )
+
+// windowsSleep function
+//
+// This function introduces a nanosecond-level sleep when running on Windows systems.
+// The primary purpose of this function is to address the low time resolution issue on Windows.
+// On Windows, the system time is typically updated every 10-15 milliseconds. Therefore, querying the current time multiple times within this period might return the same value.
+// This can cause issues in scenarios requiring high-precision timestamps, such as in tests.
+//
+// By introducing a brief sleep, we ensure that consecutive calls to get the current time will yield different values, thereby providing unique timestamps.
+// This function is a no-op on non-Windows systems.
+func windowsSleep() {
+	if runtime.GOOS == "windows" {
+		time.Sleep(time.Nanosecond)
+	}
+}
 
 // QuoteIfNeeded adds double quotes around a string if it contains spaces
 func QuoteIfNeeded(s string) string {
@@ -72,6 +88,7 @@ func CreateFolder(username, foldername string, description string) error {
 		CreatedAt:   time.Now(),
 		Files:       make(map[string]*File),
 	}
+	windowsSleep()
 	return SaveData()
 }
 
@@ -100,6 +117,7 @@ func CreateFile(username, foldername, filename string, description string) error
 		Description: description,
 		CreatedAt:   time.Now(),
 	}
+	windowsSleep()
 	return SaveData()
 }
 

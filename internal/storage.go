@@ -3,8 +3,11 @@ package internal
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 var dataFile = "data.json"
@@ -41,4 +44,33 @@ func LoadData() error {
 	}
 
 	return json.Unmarshal(data, &users)
+}
+
+// SetDataFile sets the data file path and checks if it's a valid path
+func SetDataFile(path string) error {
+	if strings.HasSuffix(path, "/") {
+		return errors.New("provided path ends with a '/', please provide a valid file path")
+	}
+
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		return errors.New("invalid file path")
+	}
+
+	info, err := os.Stat(absPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			dir := filepath.Dir(absPath)
+			if _, dirErr := os.Stat(dir); os.IsNotExist(dirErr) {
+				return errors.New("directory does not exist")
+			}
+		} else {
+			return errors.New("error checking path")
+		}
+	} else if info.IsDir() {
+		return errors.New("provided path is a directory, please provide a valid file path")
+	}
+
+	dataFile = absPath
+	return nil
 }

@@ -51,6 +51,20 @@ go test ./internal/...
 
 The virtual file system is implemented as a REPL (Read-Eval-Print Loop) where users can type commands to interact with the system. Usernames, folder names, and file names are case-insensitive. Below are the available commands and their usage.
 
+### Specifying Data File Path
+
+You can specify the location and name of the `data.json` file by passing the path as a command-line argument when starting the application. If the provided path is a directory or ends with a `/`, an error will be returned. By default, the `data.json` file will be created and used in the directory where the application is executed.
+
+#### Example:
+
+```sh
+./vfs /path/to/custom_data.json
+./vfs /path/to/directory/ ❌ # This will return an error
+./vfs /path/to/directory ❌ # This will return an error
+```
+
+In the first example, the data will be stored in /path/to/custom_data.json. In the second and third examples, an error will be returned since the provided path is a directory or ends with a /.
+
 ### Commands
 0. **help**
    
